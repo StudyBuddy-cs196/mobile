@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">StudyBuddy</string>
     <string name="facebook_application_id" translatable="false">193850071018532</string>
+    <string name="profile_pic_setter">ProfilePicSetter</string>
 </resources>
