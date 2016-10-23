@@ -17,23 +17,32 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int RC_SIGN_IN = 0;
     private FirebaseAuth auth;
     public static String profilePicURL = "";
+    public static String lastName = "";
+    public static String firstName = "";
+    public static String fullName = "";
     ImageView profilePicSetterImageView;
+    EditText firstNameSetterEditText;
+    EditText lastNameSetterEditText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() != null){
-            //User alread signed in
+            //User already signed in
             Log.d("AUTH", auth.getCurrentUser().getEmail());
         } else {
             startActivityForResult(AuthUI.getInstance()
@@ -47,6 +56,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.logOutButton).setOnClickListener(this);
         profilePicURL = auth.getCurrentUser().getPhotoUrl()+"";
         profilePicSetterImageView = (ImageView) findViewById(R.id.profilePicSetter);
+        fullName = auth.getCurrentUser().getDisplayName();
+        if(fullName.split("\\w+").length > 1){
+            lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
+            firstName = fullName.substring(0, fullName.lastIndexOf(' '));
+        } else {
+            firstName = fullName;
+            lastName = "";
+        }
+        firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
+        lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
+        firstNameSetterEditText.setText(firstName);
+        lastNameSetterEditText.setText(lastName);
         GetXMLTask task = new GetXMLTask();
         task.execute(new String[] { profilePicURL });
     }
@@ -117,6 +138,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("AUTH", auth.getCurrentUser().getEmail());
                 Log.d("AUTH", auth.getCurrentUser().getDisplayName());
                 Log.d("AUTH", auth.getCurrentUser().getPhotoUrl()+"");
+                fullName = auth.getCurrentUser().getDisplayName();
+                if(fullName.split("\\w+").length > 1){
+                    lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
+                    firstName = fullName.substring(0, fullName.lastIndexOf(' '));
+                } else {
+                    firstName = fullName;
+                    lastName = "";
+                }
                 profilePicURL = auth.getCurrentUser().getPhotoUrl()+"";
             } else {
                 //User not authenticated

@@ -2,4 +2,9 @@
     <string name="app_name">StudyBuddy</string>
     <string name="facebook_application_id" translatable="false">193850071018532</string>
     <string name="profile_pic_setter">ProfilePicSetter</string>
+    <string name="first_name_setter">FirstNameSetter</string>
+    <string name="first_name_setter_hint">First Name</string>
+    <string name="last_name_setter">LastNameSetter</string>
+    <string name="last_name_setter_hint">Last Name</string>
+    <string name="log_out_button_text">Log Out</string>
 </resources>
