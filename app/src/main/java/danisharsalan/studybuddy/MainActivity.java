@@ -44,6 +44,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(auth.getCurrentUser() != null){
             //User already signed in
             Log.d("AUTH", auth.getCurrentUser().getEmail());
+            if(auth.getCurrentUser().getPhotoUrl()+"" == null){
+                profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
+            } else {
+                profilePicURL = auth.getCurrentUser().getPhotoUrl() + "";
+            }
+            profilePicSetterImageView = (ImageView) findViewById(R.id.profilePicSetter);
+            fullName = auth.getCurrentUser().getDisplayName();
+            if(fullName.split("\\w+").length > 1){
+                lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
+                firstName = fullName.substring(0, fullName.lastIndexOf(' '));
+            } else {
+                firstName = fullName;
+                lastName = "";
+            }
+            GetXMLTask task = new GetXMLTask();
+            task.execute(new String[] { profilePicURL });
+            firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
+            lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
+            firstNameSetterEditText.setText(firstName);
+            lastNameSetterEditText.setText(lastName);
         } else {
             startActivityForResult(AuthUI.getInstance()
                     .createSignInIntentBuilder()
@@ -54,22 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .build(), RC_SIGN_IN);
         }
         findViewById(R.id.logOutButton).setOnClickListener(this);
-        profilePicURL = auth.getCurrentUser().getPhotoUrl()+"";
-        profilePicSetterImageView = (ImageView) findViewById(R.id.profilePicSetter);
-        fullName = auth.getCurrentUser().getDisplayName();
-        if(fullName.split("\\w+").length > 1){
-            lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
-            firstName = fullName.substring(0, fullName.lastIndexOf(' '));
-        } else {
-            firstName = fullName;
-            lastName = "";
-        }
-        firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
-        lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
-        firstNameSetterEditText.setText(firstName);
-        lastNameSetterEditText.setText(lastName);
-        GetXMLTask task = new GetXMLTask();
-        task.execute(new String[] { profilePicURL });
     }
 
     private class GetXMLTask extends AsyncTask<String, Void, Bitmap> {
@@ -146,10 +150,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     firstName = fullName;
                     lastName = "";
                 }
-                profilePicURL = auth.getCurrentUser().getPhotoUrl()+"";
+                if(auth.getCurrentUser().getPhotoUrl()+"" == null){
+                    profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
+                } else {
+                    profilePicURL = auth.getCurrentUser().getPhotoUrl() + "";
+                }
+                firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
+                lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
+                firstNameSetterEditText.setText(firstName);
+                lastNameSetterEditText.setText(lastName);
             } else {
                 //User not authenticated
                 Log.d("AUTH", "NOT AUTHENTICATED");
+                startActivityForResult(AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setProviders(
+                                AuthUI.FACEBOOK_PROVIDER,
+                                AuthUI.EMAIL_PROVIDER,
+                                AuthUI.GOOGLE_PROVIDER)
+                        .build(), RC_SIGN_IN);
             }
         }
     }
@@ -166,6 +185,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             if(auth.getCurrentUser() != null){
                                 //User alread signed in
                                 Log.d("AUTH", auth.getCurrentUser().getEmail());
+                                Log.d("AUTH", auth.getCurrentUser().getEmail());
+                                Log.d("AUTH", auth.getCurrentUser().getDisplayName());
+                                Log.d("AUTH", auth.getCurrentUser().getPhotoUrl()+"");
+                                fullName = auth.getCurrentUser().getDisplayName();
+                                if(fullName.split("\\w+").length > 1){
+                                    lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
+                                    firstName = fullName.substring(0, fullName.lastIndexOf(' '));
+                                } else {
+                                    firstName = fullName;
+                                    lastName = "";
+                                }
+                                if(auth.getCurrentUser().getPhotoUrl()+"" == null){
+                                    profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
+                                } else {
+                                    profilePicURL = auth.getCurrentUser().getPhotoUrl() + "";
+                                }
+                                firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
+                                lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
+                                firstNameSetterEditText.setText(firstName);
+                                lastNameSetterEditText.setText(lastName);
                             } else {
                                 startActivityForResult(AuthUI.getInstance()
                                         .createSignInIntentBuilder()
