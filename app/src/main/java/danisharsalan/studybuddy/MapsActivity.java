@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -46,6 +47,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String provider_id = "";
     String uid = "";
     String selectedCourse = "";
+    private float myHue = BitmapDescriptorFactory.HUE_AZURE;
+    private float matchHue = BitmapDescriptorFactory.HUE_BLUE;
 
     protected LocationManager mLocationManager;
     private final LocationListener mLocationListener = new LocationListener() {
@@ -55,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             currentLocationLat = location.getLatitude();
             currentLocationLong = location.getLongitude();
             Log.d("Latitude", String.valueOf(currentLocationLat));
-            placeMarker(currentLocationLat, currentLocationLong, "Your Location!");
+            placeMarker(currentLocationLat, currentLocationLong, "Your Location!", myHue);
         }
 
         @Override
@@ -128,7 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for(int i = 0; i < userLocationsArray.length(); i++)
                                 {
                                     JSONObject newUserLocation = userLocationsArray.getJSONObject(i);
-                                    placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("email"));
+                                    placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("email"), matchHue);
                                 }
 
 //                            setTextBarAuto();
@@ -169,7 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 currentLocationLat = loc.getLatitude();
                 currentLocationLong = loc.getLongitude();
 
-                placeMarker(loc.getLatitude(), loc.getLongitude(), "Your Location");
+                placeMarker(loc.getLatitude(), loc.getLongitude(), "Your Location", myHue);
             }
 
         }
@@ -193,17 +196,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         Log.d("Location", "Current location: " + currentLocationLat + "," + currentLocationLong);
-        placeMarker(currentLocationLat, currentLocationLong, "Your Location!");
+        placeMarker(currentLocationLat, currentLocationLong, "Your Location!", myHue);
     }
 
-    public void placeMarker(double lat, double lng, String name)
+    public void placeMarker(double lat, double lng, String name, float hue)
     {
         Log.d("Location", "Current Real location: " + currentLocationLat + "," + currentLocationLong);
         if(mMap != null) {
 
             LatLng markerLoc = new LatLng(lat, lng);
-            mMap.addMarker(new MarkerOptions().position(markerLoc).title(name));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc, 17));
+            mMap.addMarker(new MarkerOptions().position(markerLoc).title(name).icon(BitmapDescriptorFactory.defaultMarker(hue)));
+            if(hue == myHue)
+            {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc, 17));
+            }
+
         }
     }
 

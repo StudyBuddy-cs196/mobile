@@ -194,7 +194,7 @@ public class CoursePage extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        // Do something after 5s = 5000ms
+                        // Do something after .1s = 100ms
                         Intent intent = new Intent(CoursePage.this,MapsActivity.class);
                         intent.putExtra("display name", display_name);
                         intent.putExtra("email", email);
@@ -208,10 +208,10 @@ public class CoursePage extends AppCompatActivity {
                         intent.putExtra("added codes", addedCodes);
                         intent.putExtra("selected course", tvTemp.getText().toString());
                         //i.putExtra("display name", auth.getCurrentUser().getDisplayName());
-
+                        tvTemp.setTextColor(getResources().getColor(R.color.transparent_white));
                         startActivity(intent);
                     }
-                }, 1000);
+                }, 100);
 
             }
         });
