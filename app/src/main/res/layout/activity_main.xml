@@ -15,9 +15,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/logOutButton"
-        android:layout_marginBottom="62dp"
+        android:layout_alignBaseline="@+id/donebutton"
+        android:layout_alignBottom="@+id/donebutton"
+        android:layout_alignRight="@+id/profilePicSetter"
+        android:layout_alignEnd="@+id/profilePicSetter" />
+
+    <Button
+        android:text="@string/done_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="54dp"
+        android:id="@+id/donebutton" />
 
     <ImageButton
         android:layout_height="100dp"

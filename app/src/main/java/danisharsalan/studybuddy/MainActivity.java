@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
@@ -43,27 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() != null){
             //User already signed in
-            Log.d("AUTH", auth.getCurrentUser().getEmail());
-            if(auth.getCurrentUser().getPhotoUrl()+"" == null){
-                profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
-            } else {
-                profilePicURL = auth.getCurrentUser().getPhotoUrl() + "";
-            }
-            profilePicSetterImageView = (ImageView) findViewById(R.id.profilePicSetter);
-            fullName = auth.getCurrentUser().getDisplayName();
-            if(fullName.split("\\w+").length > 1){
-                lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
-                firstName = fullName.substring(0, fullName.lastIndexOf(' '));
-            } else {
-                firstName = fullName;
-                lastName = "";
-            }
-            GetXMLTask task = new GetXMLTask();
-            task.execute(new String[] { profilePicURL });
-            firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
-            lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
-            firstNameSetterEditText.setText(firstName);
-            lastNameSetterEditText.setText(lastName);
+            Log.d("Auth", "User is already signed in on firebase");
+            moveToNextActivity(false);
         } else {
             startActivityForResult(AuthUI.getInstance()
                     .createSignInIntentBuilder()
@@ -74,7 +56,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .build(), RC_SIGN_IN);
         }
         findViewById(R.id.logOutButton).setOnClickListener(this);
+        Button doneButton = (Button) findViewById(R.id.donebutton);
+        doneButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                moveToNextActivity(true);
+            }
+        });
     }
+
+    public void moveToNextActivity(boolean mustRegister) {
+        Intent i;
+        if(!mustRegister){
+            i = new Intent(MainActivity.this,CoursePage.class);
+        } else {
+            i = new Intent(MainActivity.this,AfterProfileWelcome.class);
+        }
+        i.putExtra("display name", auth.getCurrentUser().getDisplayName());
+        i.putExtra("email", auth.getCurrentUser().getEmail());
+        i.putExtra("photo url", auth.getCurrentUser().getPhotoUrl());
+        i.putExtra("provider id", auth.getCurrentUser().getProviderId());
+        i.putExtra("uid", auth.getCurrentUser().getUid());
+        i.putExtra("anonymity", auth.getCurrentUser().isAnonymous());
+        i.putExtra("mustregister", mustRegister);
+
+        startActivity(i);
+    }
+
 
     private class GetXMLTask extends AsyncTask<String, Void, Bitmap> {
         @Override
@@ -135,7 +142,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("Activity Done", "Activity did this");
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                 //User logged in
@@ -206,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 firstNameSetterEditText.setText(firstName);
                                 lastNameSetterEditText.setText(lastName);
                             } else {
+                                //when user not signed in
                                 startActivityForResult(AuthUI.getInstance()
                                         .createSignInIntentBuilder()
                                         .setProviders(

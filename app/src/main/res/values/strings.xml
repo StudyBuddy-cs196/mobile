@@ -7,4 +7,10 @@
     <string name="last_name_setter">LastNameSetter</string>
     <string name="last_name_setter_hint">Last Name</string>
     <string name="log_out_button_text">Log Out</string>
+    <string name="done_button_text">Done</string>
+    <string name="title_activity_after_profile_welcome">AfterProfileWelcome</string>
+    <string name="intro_text_hello">Hello</string>
+    <string name="next_button_in_courses_view">Next</string>
+    <string name="loading_courses_text">Loading Courses...</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
