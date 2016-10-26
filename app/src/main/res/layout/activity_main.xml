@@ -72,6 +72,7 @@
         android:layout_marginTop="60dp"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
+        android:background="@color/transparent_white"
         android:scrollbars="vertical" />
 
     <Button
