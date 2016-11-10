@@ -1,9 +1,7 @@
 package danisharsalan.studybuddy;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import java.io.IOException;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,11 +10,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,12 +20,12 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    private static final int RC_SIGN_IN = 0;
-    private FirebaseAuth auth;
+    String display_name = "";
+    String email = "";
+    String photoUrl = "";
     public static String profilePicURL = "";
     public static String lastName = "";
     public static String firstName = "";
-    public static String fullName = "";
     ImageView profilePicSetterImageView;
     EditText firstNameSetterEditText;
     EditText lastNameSetterEditText;
@@ -41,20 +34,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        auth = FirebaseAuth.getInstance();
-        if(auth.getCurrentUser() != null){
-            //User already signed in
-            Log.d("Auth", "User is already signed in on firebase");
-            moveToNextActivity(false);
+
+        Intent i = getIntent();
+        display_name = i.getStringExtra("display name") + "";
+        if(display_name.split("\\w+").length > 1){
+            lastName = display_name.substring(display_name.lastIndexOf(" ")+1);
+            firstName = display_name.substring(0, display_name.lastIndexOf(' '));
         } else {
-            startActivityForResult(AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setProviders(
-                            AuthUI.FACEBOOK_PROVIDER,
-                            AuthUI.EMAIL_PROVIDER,
-                            AuthUI.GOOGLE_PROVIDER)
-                    .build(), RC_SIGN_IN);
+            firstName = display_name;
+            lastName = "";
         }
+        firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
+        lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
+        firstNameSetterEditText.setText(firstName);
+        lastNameSetterEditText.setText(lastName);
+
+        email = i.getStringExtra("email");
+
+        photoUrl = i.getStringExtra("photo url");
+        if(photoUrl+"" == null){
+            profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
+        } else {
+            profilePicURL = photoUrl + "";
+            //profilePicSetterImageView.findViewById(R.id.profilePicSetter);
+        }
+
         findViewById(R.id.logOutButton).setOnClickListener(this);
         Button doneButton = (Button) findViewById(R.id.donebutton);
         doneButton.setOnClickListener(new View.OnClickListener(){
@@ -71,14 +75,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             i = new Intent(MainActivity.this,AfterProfileWelcome.class);
         }
-        i.putExtra("display name", auth.getCurrentUser().getDisplayName());
-        i.putExtra("email", auth.getCurrentUser().getEmail());
-        i.putExtra("photo url", auth.getCurrentUser().getPhotoUrl());
-        i.putExtra("provider id", auth.getCurrentUser().getProviderId());
-        i.putExtra("uid", auth.getCurrentUser().getUid());
-        i.putExtra("anonymity", auth.getCurrentUser().isAnonymous());
+        i.putExtra("display name", display_name);
+        i.putExtra("email", email);
+        i.putExtra("photo url", photoUrl);
         i.putExtra("mustregister", mustRegister);
-
         startActivity(i);
     }
 
@@ -139,93 +139,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d("Activity Done", "Activity did this");
-        if(requestCode == RC_SIGN_IN){
-            if(resultCode == RESULT_OK){
-                //User logged in
-                Log.d("AUTH", auth.getCurrentUser().getEmail());
-                Log.d("AUTH", auth.getCurrentUser().getDisplayName());
-                Log.d("AUTH", auth.getCurrentUser().getPhotoUrl()+"");
-                fullName = auth.getCurrentUser().getDisplayName();
-                if(fullName.split("\\w+").length > 1){
-                    lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
-                    firstName = fullName.substring(0, fullName.lastIndexOf(' '));
-                } else {
-                    firstName = fullName;
-                    lastName = "";
-                }
-                if(auth.getCurrentUser().getPhotoUrl()+"" == null){
-                    profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
-                } else {
-                    profilePicURL = auth.getCurrentUser().getPhotoUrl() + "";
-                }
-                firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
-                lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
-                firstNameSetterEditText.setText(firstName);
-                lastNameSetterEditText.setText(lastName);
-            } else {
-                //User not authenticated
-                Log.d("AUTH", "NOT AUTHENTICATED");
-                startActivityForResult(AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setProviders(
-                                AuthUI.FACEBOOK_PROVIDER,
-                                AuthUI.EMAIL_PROVIDER,
-                                AuthUI.GOOGLE_PROVIDER)
-                        .build(), RC_SIGN_IN);
-            }
-        }
-    }
-
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.logOutButton){
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Log.d("AUTH", "USER LOGGED OUT!");
-                            if(auth.getCurrentUser() != null){
-                                //User alread signed in
-                                Log.d("AUTH", auth.getCurrentUser().getEmail());
-                                Log.d("AUTH", auth.getCurrentUser().getEmail());
-                                Log.d("AUTH", auth.getCurrentUser().getDisplayName());
-                                Log.d("AUTH", auth.getCurrentUser().getPhotoUrl()+"");
-                                fullName = auth.getCurrentUser().getDisplayName();
-                                if(fullName.split("\\w+").length > 1){
-                                    lastName = fullName.substring(fullName.lastIndexOf(" ")+1);
-                                    firstName = fullName.substring(0, fullName.lastIndexOf(' '));
-                                } else {
-                                    firstName = fullName;
-                                    lastName = "";
-                                }
-                                if(auth.getCurrentUser().getPhotoUrl()+"" == null){
-                                    profilePicURL = "http://www.clker.com/cliparts/S/0/B/R/c/g/united-nations-logo-transparent-background.svg";
-                                } else {
-                                    profilePicURL = auth.getCurrentUser().getPhotoUrl() + "";
-                                }
-                                firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
-                                lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
-                                firstNameSetterEditText.setText(firstName);
-                                lastNameSetterEditText.setText(lastName);
-                            } else {
-                                //when user not signed in
-                                startActivityForResult(AuthUI.getInstance()
-                                        .createSignInIntentBuilder()
-                                        .setProviders(
-                                                AuthUI.FACEBOOK_PROVIDER,
-                                                AuthUI.EMAIL_PROVIDER,
-                                                AuthUI.GOOGLE_PROVIDER)
-                                        .build(), RC_SIGN_IN);
-                            }
-                        }
-                    });
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            i.putExtra("sign out", true);
+            startActivity(i);
         }
     }
+
 }

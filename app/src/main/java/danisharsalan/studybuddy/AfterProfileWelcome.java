@@ -52,8 +52,6 @@ public class AfterProfileWelcome extends AppCompatActivity {
     String display_name = "";
     String email = "";
     String photo_url = "";
-    String provider_id = "";
-    String uid = "";
     ArrayList<String> courseList = new ArrayList<String>();
     ArrayList<String> courseCode = new ArrayList<String>();
     ArrayList<String> addedCodes = new ArrayList<String>();
@@ -74,9 +72,6 @@ public class AfterProfileWelcome extends AppCompatActivity {
         display_name = i.getStringExtra("display name");
         email = i.getStringExtra("email");
         photo_url = i.getStringExtra("photo url");
-        provider_id = i.getStringExtra("provider id");
-        uid = i.getStringExtra("uid");
-        isAnonymous = i.getBooleanExtra("anonymity", false);
         mLayout = (LinearLayout) findViewById(R.id.linlay);
 
 
@@ -240,9 +235,6 @@ public class AfterProfileWelcome extends AppCompatActivity {
                 intent.putExtra("display name", display_name);
                 intent.putExtra("email", email);
                 intent.putExtra("photo url", photo_url);
-                //intent.putExtra("provider id", provider_id);
-                //intent.putExtra("uid", uid);
-                intent.putExtra("anonymity", isAnonymous);
                 intent.putExtra("full course list", courseList);
                 intent.putExtra("full code list", courseCode);
                 intent.putExtra("added courses", addedCourses);
@@ -283,5 +275,7 @@ public class AfterProfileWelcome extends AppCompatActivity {
         textView.setText(text);
         return textView;
     }
+
+
 
 }
