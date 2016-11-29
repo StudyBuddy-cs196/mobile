@@ -59,20 +59,6 @@
         android:layout_toRightOf="@+id/profilePicSetter"
         android:layout_toEndOf="@+id/profilePicSetter" />
 
-    <EditText
-        android:inputType="textMultiLine"
-        android:lines="8"
-        android:minLines="6"
-        android:gravity="top|left"
-        android:maxLines="10"
-        android:id="@+id/desc_edittext"
-        android:layout_below="@id/last_name"
-        android:layout_marginTop="60dp"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:background="@color/transparent_white"
-        android:scrollbars="vertical" />
-
     <Button
         android:text="@string/done_button_text"
         android:layout_width="wrap_content"
@@ -83,4 +69,29 @@
         android:layout_marginTop="60dp"
         android:id="@+id/donebutton"
         android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:minLines="6"
+        android:gravity="top|left"
+        android:maxLines="10"
+        android:id="@+id/desc_edittext"
+        android:maxLength="250"
+        android:layout_marginTop="60dp"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:background="@drawable/roundedbutton"
+        android:backgroundTint="@color/transparent_white"
+        android:scrollbars="vertical"
+        android:hint="What are your study habits? Write something about youself. (Limit: 250)"
+        android:layout_below="@+id/profilePicSetter"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp" />
 </RelativeLayout>

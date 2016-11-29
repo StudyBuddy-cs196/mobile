@@ -80,7 +80,11 @@ public class LoginActivity extends AppCompatActivity implements
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         i.putExtra("display name", acct.getDisplayName());
         i.putExtra("email", acct.getEmail());
-        i.putExtra("photo url", acct.getPhotoUrl());
+        if(acct.getPhotoUrl() == null){
+            i.putExtra("photo url", acct.getPhotoUrl());
+        } else {
+            i.putExtra("photo url", acct.getPhotoUrl().toString());
+        }
         startActivity(i);
     }
 

@@ -11,6 +11,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,11 +28,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.android.gms.vision.text.Text;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -49,6 +56,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String selectedCourse = "";
     private float myHue = BitmapDescriptorFactory.HUE_AZURE;
     private float matchHue = BitmapDescriptorFactory.HUE_BLUE;
+    private SlidingUpPanelLayout slidingLayout;
+    private TextView slideUpNameTextView;
+    private ImageView slideUpPreviewPic;
+    private ImageView expandedBuddyPic;
+    private TextView expandedBuddyName;
+    private TextView buddyBio;
 
     protected LocationManager mLocationManager;
     private final LocationListener mLocationListener = new LocationListener() {
@@ -130,9 +143,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
                                 for(int i = 0; i < userLocationsArray.length(); i++)
                                 {
-                                    JSONObject newUserLocation = userLocationsArray.getJSONObject(i);
+                                    final JSONObject newUserLocation = userLocationsArray.getJSONObject(i);
                                     placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("email"), matchHue);
                                 }
+
 
 //                            setTextBarAuto();
                             } catch (JSONException e) {
@@ -149,7 +163,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             queue.add(stringRequest);
         }
 
+        slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        slidingLayout.setPanelSlideListener(onSlideListener());
+        slideUpNameTextView = (TextView) findViewById(R.id.username);
+        slideUpNameTextView.setText(email);
+        slideUpPreviewPic = (ImageView) findViewById(R.id.buddyPicPreview);
+        expandedBuddyPic = (ImageView) findViewById(R.id.expandedBuddyPic);
+        expandedBuddyName = (TextView) findViewById(R.id.expandedBuddyName);
+        expandedBuddyName.setText(email);
+        buddyBio = (TextView) findViewById(R.id.buddyBio);
+    }
 
+    private SlidingUpPanelLayout.PanelSlideListener onSlideListener() {
+        return new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+                //textView.setText("panel is sliding");
+            }
+
+            @Override
+            public void onPanelCollapsed(View view) {
+                //textView.setText("panel Collapse");
+                slideUpNameTextView.setVisibility(View.VISIBLE);
+                slideUpPreviewPic.setVisibility(View.VISIBLE);
+                expandedBuddyName.setVisibility(View.INVISIBLE);
+                expandedBuddyPic.setVisibility(View.INVISIBLE);
+                buddyBio.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onPanelExpanded(View view) {
+                //textView.setText("panel expand");
+                slideUpNameTextView.setVisibility(View.INVISIBLE);
+                slideUpPreviewPic.setVisibility(View.INVISIBLE);
+                expandedBuddyName.setVisibility(View.VISIBLE);
+                expandedBuddyPic.setVisibility(View.VISIBLE);
+                buddyBio.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPanelAnchored(View view) {
+                //textView.setText("panel anchored");
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
+                //textView.setText("panel is Hidden");
+            }
+        };
     }
 
     @Override
@@ -211,6 +272,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc, 17));
             }
 
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 17));
+                    slideUpNameTextView.setText(marker.getTitle());
+                    expandedBuddyName.setText(marker.getTitle());
+                    return true;
+                }
+            });
         }
     }
 

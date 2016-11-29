@@ -10,27 +10,110 @@
     android:gravity="center_horizontal"
     >
 
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
+        android:gravity="bottom"
+        sothree:umanoDragView="@+id/dragView"
+        sothree:umanoOverlay="true"
+        sothree:umanoPanelHeight="68dp"
+        sothree:umanoParalaxOffset="100dp"
+        sothree:umanoShadowHeight="4dp">
 
-        <!--<LinearLayout-->
+        <!-- MAIN CONTENT -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                />
+
+            <!--<LinearLayout-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
             <!--android:layout_weight="1">-->
 
-        <!--</LinearLayout>-->
-    </LinearLayout>
+            <!--</LinearLayout>-->
+        </LinearLayout>
+
+        <!-- SLIDING LAYOUT -->
+        <LinearLayout
+            android:id="@+id/dragView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="false"
+            android:orientation="vertical"
+            android:background="@color/StudBudMainColor">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_height="50dp"
+                    android:layout_width="50dp"
+                    android:background="@drawable/circlepropic"
+                    android:id="@+id/buddyPicPreview"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"/>
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="20dp"
+                    android:layout_toRightOf="@+id/buddyPicPreview"
+                    android:paddingLeft="10dp"
+                    android:text="Pick a buddy to study with!"
+                    android:textSize="20sp" />
 
 
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:background="@drawable/circlepropic"
+                android:id="@+id/expandedBuddyPic"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/expandedBuddyPic"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textAlignment="center"
+                android:text="Pick a buddy to study with!"
+                android:layout_marginTop="15dp"
+                android:id="@+id/expandedBuddyName" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/expandedBuddyName"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"
+                android:text="INSERT BIO HERE.ERT BIO HERE. INSERT ERT BIO HEHERE. INSERT BIO HERE. INSEINSERT ERT BIO HEHERE.RT BIO HERE. INSERT BIO HINSERT ERT BIO HEHERE.ERE. INSERINSERT ERT BIO HEHERE.T BIO HERE."
+                android:layout_marginTop="15dp"
+                android:id="@+id/buddyBio" />
+
+        </LinearLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 </RelativeLayout>
 
