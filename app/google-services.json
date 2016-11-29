@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "328211817154",
-    "firebase_url": "https://studybuddy-2c0dc.firebaseio.com",
-    "project_id": "studybuddy-2c0dc",
-    "storage_bucket": "studybuddy-2c0dc.appspot.com"
+    "project_number": "PROJECT_NUMBER",
+    "firebase_url": "FIREBASE_URL",
+    "project_id": "PROJECT_ID",
+    "storage_bucket": "STORAGE_BUCKET"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:328211817154:android:19a4daba8324b0a0",
+        "mobilesdk_app_id": "MOBILE_SDK_APP_ID",
         "android_client_info": {
           "package_name": "danisharsalan.studybuddy"
         }
       },
       "oauth_client": [
         {
-          "client_id": "328211817154-c4biioaree1jgh44kr3p0euiugn2tsio.apps.googleusercontent.com",
+          "client_id": "CLIENT_ID",
           "client_type": 1,
           "android_info": {
             "package_name": "danisharsalan.studybuddy",
-            "certificate_hash": "762A3262C04B3B5B870A1059ACC10A26B570DBFA"
+            "certificate_hash": "CERT_HASH"
           }
         },
         {
-          "client_id": "328211817154-jmm1pov5krmfc2sljqncsh7fscrdjvtb.apps.googleusercontent.com",
+          "client_id": "CLIENT_ID",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCKj7c-URIrJxt84upg1PjuT6Kj_Ui6svA"
+          "current_key": "API_KEY"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "328211817154-jmm1pov5krmfc2sljqncsh7fscrdjvtb.apps.googleusercontent.com",
+              "client_id": "CLIENT_ID",
               "client_type": 3
             }
           ]
