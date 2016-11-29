@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             if(shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 Toast.makeText(this,
-                        "External storage permission required to add images",
+                        "External storage permission required to pick images from Gallery",
                         Toast.LENGTH_SHORT).show();
             }
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(i, PICK_IMAGE);
             } else {
                 Toast.makeText(this,
-                        "External write permission has not been granted, cannot save images",
+                        "Cannot change profile picture without permission to Gallery",
                         Toast.LENGTH_SHORT).show();
             }
         } else {
