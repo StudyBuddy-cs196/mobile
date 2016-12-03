@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import com.google.android.gms.vision.text.Text;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Picasso;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -276,13 +277,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 17));
-                    slideUpNameTextView.setText(marker.getTitle());
-                    expandedBuddyName.setText(marker.getTitle());
+                    if(marker.getTitle().equals("Your Location!")){
+                        slideUpNameTextView.setText("You!");
+                        expandedBuddyName.setText(display_name);
+                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
+                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
+                        //buddyBio.setText(self bio from server)
+                    } else {
+                        slideUpNameTextView.setText(marker.getTitle()); //user getTitle() to get buddy's info from server like name, pic, and bio
+                        expandedBuddyName.setText(marker.getTitle());
+                        //Picasso.with(slideUpPreviewPic.getContext()).load(get url from server).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
+                        //Picasso.with(expandedBuddyPic.getContext()).load(get url from server).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
+                        //buddyBio.setText(get bio from server)
+                    }
                     return true;
                 }
             });
         }
     }
-
 
 }

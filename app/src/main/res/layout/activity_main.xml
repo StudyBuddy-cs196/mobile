@@ -84,7 +84,7 @@
         android:background="@drawable/roundedbutton"
         android:backgroundTint="@color/transparent_white"
         android:scrollbars="vertical"
-        android:hint="What are your study habits? Write something about youself. (Limit: 250)"
+        android:hint="What are your study habits? Write something about yourself. (Limit: 250)"
         android:layout_below="@+id/profilePicSetter"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

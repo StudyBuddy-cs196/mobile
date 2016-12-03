@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
+            profilePicURL = selectedImage.toString();
             Picasso.with(profilePicSetterImageView.getContext()).load(selectedImage)
                     .transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(profilePicSetterImageView);
             Log.d("transformation", "complete");
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void moveToNextActivity(boolean mustRegister) {
+        display_name = firstNameSetterEditText.getText() + " " + lastNameSetterEditText.getText();
         Intent i;
         if(!mustRegister){
             i = new Intent(MainActivity.this,CoursePage.class);
@@ -158,8 +160,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         i.putExtra("display name", display_name);
         i.putExtra("email", email);
-        i.putExtra("photo url", photoUrl);
+        i.putExtra("photo url", profilePicURL);
         i.putExtra("mustregister", mustRegister);
+        Log.d("Display Name:", display_name);
         startActivity(i);
     }
 
