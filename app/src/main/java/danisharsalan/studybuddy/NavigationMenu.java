@@ -85,7 +85,7 @@ public class NavigationMenu extends AppCompatActivity {
         if(navigationView==null){
             Log.d("NULL NAV","it is null ");
         }
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab = (FloatingActionButton) findViewById(R.id.fab);
         Intent i = getIntent();
         display_name = i.getStringExtra("display name");
         email =i.getStringExtra("email");
@@ -102,20 +102,12 @@ public class NavigationMenu extends AppCompatActivity {
         // Navigation view header
         navHeader = navigationView.getHeaderView(0);
         txtName = (TextView) navHeader.findViewById(R.id.name);
-        txtWebsite = (TextView) navHeader.findViewById(R.id.website);
+        //txtWebsite = (TextView) navHeader.findViewById(R.id.website);
         imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
 
         // load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         // load nav menu header data
         loadNavHeader();
@@ -141,7 +133,7 @@ public class NavigationMenu extends AppCompatActivity {
         txtName.setText(display_name);
 
         // loading header background image
-        Glide.with(this).load(urlNavHeaderBg)
+        Glide.with(this).load(R.color.StudBudMainColor)
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgNavHeaderBg);
@@ -149,7 +141,7 @@ public class NavigationMenu extends AppCompatActivity {
         // Loading profile image
         Glide.with(this).load(photo_url)
                 .crossFade()
-                .thumbnail(0.5f)
+                .thumbnail(0.56f)
                 .bitmapTransform(new RoundedTransformation2(this))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgProfile);
@@ -175,7 +167,6 @@ public class NavigationMenu extends AppCompatActivity {
             drawer.closeDrawers();
 
             // show or hide the fab button
-            toggleFab();
             return;
         }
 
@@ -202,7 +193,6 @@ public class NavigationMenu extends AppCompatActivity {
         }
 
         // show or hide the fab button
-        toggleFab();
 
         //Closing drawer on item click
         drawer.closeDrawers();
@@ -223,13 +213,16 @@ public class NavigationMenu extends AppCompatActivity {
                 return profileFragment;
             case 2:
                 // movies fragment
-                AddClassesFragment addClassesFragment = new AddClassesFragment();
-                return addClassesFragment;
+                Intent i = new Intent(this, AfterProfileWelcome.class);
+                i.putExtra("display_name", display_name);
+                i.putExtra("email", email);
+                i.putExtra("photo url", photo_url);
+                startActivity(i);
             case 3:
                 // notifications fragment
-                Intent i = new Intent(this, LoginActivity.class);
-                i.putExtra("sign out", true);
-                startActivity(i);
+                Intent i2 = new Intent(this, LoginActivity.class);
+                i2.putExtra("sign out", true);
+                startActivity(i2);
 
             case 4:
                 // settings fragment
@@ -282,8 +275,15 @@ public class NavigationMenu extends AppCompatActivity {
                         //break;
                     case R.id.nav_add_classes:
                         navItemIndex = 2;
-                        CURRENT_TAG = TAG_ADDCLASS;
-                        break;
+                        //CURRENT_TAG = TAG_ADDCLASS;
+                        Intent i2 = new Intent(NavigationMenu.this, AfterProfileWelcome.class);
+                        i2.putExtra("display name", display_name);
+                        i2.putExtra("email", email);
+                        i2.putExtra("photo url", photo_url);
+                        startActivity(i2);
+                        drawer.closeDrawers();
+                        return true;
+                        //break;
                     case R.id.nav_log_out:
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_LOGOUT;
@@ -294,16 +294,16 @@ public class NavigationMenu extends AppCompatActivity {
                         break;
                     case R.id.nav_about_us:
                         // launch new intent instead of loading fragment
-                        Intent i2 = new Intent(NavigationMenu.this, MainActivity.class);
-                        i2.putExtra("display name", display_name);
-                        i2.putExtra("email", email);
+                        Intent i3 = new Intent(NavigationMenu.this, MainActivity.class);
+                        i3.putExtra("display name", display_name);
+                        i3.putExtra("email", email);
                         if(photo_url == null){
                             Log.d("photo_url","it's null...");
-                            i2.putExtra("photo url", "https://support.plymouth.edu/kb_images/Yammer/default.jpeg");
+                            i3.putExtra("photo url", "https://support.plymouth.edu/kb_images/Yammer/default.jpeg");
                         } else {
-                            i2.putExtra("photo url", photo_url);
+                            i3.putExtra("photo url", photo_url);
                         }
-                        startActivity(i2);
+                        startActivity(i3);
                         drawer.closeDrawers();
                         return true;
                     default:
@@ -349,25 +349,25 @@ public class NavigationMenu extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawers();
-            return;
-        }
-
-        // This code loads home fragment when back key is pressed
-        // when user is in other fragment than home
-        if (shouldLoadHomeFragOnBackPress) {
-            // checking if user is on other navigation menu
-            // rather than home
-            if (navItemIndex != 0) {
-                navItemIndex = 0;
-                CURRENT_TAG = TAG_HOME;
-                loadHomeFragment();
-                return;
-            }
-        }
-
-        super.onBackPressed();
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawers();
+//            return;
+//        }
+//
+//        // This code loads home fragment when back key is pressed
+//        // when user is in other fragment than home
+//        if (shouldLoadHomeFragOnBackPress) {
+//            // checking if user is on other navigation menu
+//            // rather than home
+//            if (navItemIndex != 0) {
+//                navItemIndex = 0;
+//                CURRENT_TAG = TAG_HOME;
+//                loadHomeFragment();
+//                return;
+//            }
+//        }
+//
+//        super.onBackPressed();
     }
 
     @Override
@@ -414,11 +414,5 @@ public class NavigationMenu extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // show or hide the fab
-    private void toggleFab() {
-        if (navItemIndex == 0)
-            fab.show();
-        else
-            fab.hide();
-    }
+
 }

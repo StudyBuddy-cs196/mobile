@@ -11,6 +11,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -33,6 +39,9 @@ public class LoginActivity extends AppCompatActivity implements
     private ProgressDialog mProgressDialog;
     private GoogleSignInAccount acct;
     private boolean signOutTrue;
+
+
+    RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,12 +114,48 @@ public class LoginActivity extends AppCompatActivity implements
             // Signed in successfully, show authenticated UI.
             Log.d("handleSignIn","isSuccess");
             acct = result.getSignInAccount();
-            updateUI(true);
+            queue = Volley.newRequestQueue(this);
+            String url = "http://studybuddy-backend.herokuapp.com/is_registered?email=" + acct.getEmail();
+            Log.d("email", acct.getEmail());
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            // Display the first 500 characters of the response string.
+                            Log.d("response", response);
+                            if(response.equals("true") ){
+                                Log.d("event", "update ui to courses happened");
+                                updateUIToCourses();
+                            } else {
+                                updateUI(true);
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            // Add the request to the RequestQueue.
+            queue.add(stringRequest);
         } else {
             mGoogleApiClient.disconnect();
             Log.d("handleSignIn","isNotSuccess");
             loadActivityNoNew();
         }
+    }
+
+    private void updateUIToCourses() {
+        Intent i = new Intent(this, NavigationMenu.class);
+        i.putExtra("email", acct.getEmail());
+        i.putExtra("display name", acct.getDisplayName());
+        if(acct.getPhotoUrl() == null){
+            Log.d("photo_url","it's null...");
+            i.putExtra("photo url", "https://support.plymouth.edu/kb_images/Yammer/default.jpeg");
+        } else {
+            i.putExtra("photo url", acct.getPhotoUrl().toString());
+        }
+        startActivity(i);
     }
 
 

@@ -123,6 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String[] course = selectedCourse.split(" ");
 
         String url = "http://studybuddy-backend.herokuapp.com/matches?email=" + email + "&course="+ course[0] + "%20" + course[1];
+        Log.d("url", url);
         String encodedUrl = url;
 
         Log.d("Post Request", encodedUrl);
@@ -145,7 +146,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for(int i = 0; i < userLocationsArray.length(); i++)
                                 {
                                     final JSONObject newUserLocation = userLocationsArray.getJSONObject(i);
-                                    placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("email"), matchHue);
+                                    placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("name"), matchHue);
                                 }
 
 
@@ -167,12 +168,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         slidingLayout.setPanelSlideListener(onSlideListener());
         slideUpNameTextView = (TextView) findViewById(R.id.username);
-        slideUpNameTextView.setText(email);
+        slideUpNameTextView.setText("You!");
         slideUpPreviewPic = (ImageView) findViewById(R.id.buddyPicPreview);
         expandedBuddyPic = (ImageView) findViewById(R.id.expandedBuddyPic);
         expandedBuddyName = (TextView) findViewById(R.id.expandedBuddyName);
-        expandedBuddyName.setText(email);
+        expandedBuddyName.setText(display_name);
+        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
         buddyBio = (TextView) findViewById(R.id.buddyBio);
+        buddyBio.setText("bio");//bio
+        expandedBuddyPic.setVisibility(View.INVISIBLE);
+        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
     }
 
     private SlidingUpPanelLayout.PanelSlideListener onSlideListener() {
@@ -180,6 +185,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onPanelSlide(View view, float v) {
                 //textView.setText("panel is sliding");
+                slideUpNameTextView.setVisibility(View.INVISIBLE);
+                slideUpPreviewPic.setVisibility(View.INVISIBLE);
+                expandedBuddyName.setVisibility(View.VISIBLE);
+                expandedBuddyPic.setVisibility(View.VISIBLE);
+                buddyBio.setVisibility(View.VISIBLE);
+
             }
 
             @Override
@@ -281,11 +292,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         slideUpNameTextView.setText("You!");
                         expandedBuddyName.setText(display_name);
                         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
-                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
+                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
                         //buddyBio.setText(self bio from server)
                     } else {
-                        slideUpNameTextView.setText(marker.getTitle()); //user getTitle() to get buddy's info from server like name, pic, and bio
-                        expandedBuddyName.setText(marker.getTitle());
+                        slideUpNameTextView.setText(marker.getTitle()); //use getTitle() to get buddy's info from server like name, pic, and bio
+                        expandedBuddyName.setText(marker.getTitle()); //getTitle() should either give email or display name to the server so it can find the Buddy's user on the database
                         //Picasso.with(slideUpPreviewPic.getContext()).load(get url from server).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
                         //Picasso.with(expandedBuddyPic.getContext()).load(get url from server).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
                         //buddyBio.setText(get bio from server)

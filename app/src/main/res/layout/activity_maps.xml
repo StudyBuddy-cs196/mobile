@@ -64,7 +64,7 @@
                     android:id="@+id/buddyPicPreview"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="5dp"/>
+                    android:layout_marginTop="2dp"/>
 
                 <TextView
                     android:id="@+id/username"
@@ -72,7 +72,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textColor="@color/white"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="15dp"
                     android:layout_toRightOf="@+id/buddyPicPreview"
                     android:paddingLeft="10dp"
                     android:text="Pick a buddy to study with!"
@@ -88,7 +88,7 @@
                 android:id="@+id/expandedBuddyPic"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="40dp"/>
+                android:layout_marginTop="20dp"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -111,6 +111,17 @@
                 android:text="INSERT BIO HERE.ERT BIO HERE. INSERT ERT BIO HEHERE. INSERT BIO HERE. INSEINSERT ERT BIO HEHERE.RT BIO HERE. INSERT BIO HINSERT ERT BIO HEHERE.ERE. INSERINSERT ERT BIO HEHERE.T BIO HERE."
                 android:layout_marginTop="15dp"
                 android:id="@+id/buddyBio" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/roundedbutton"
+                android:textColor="@color/white"
+                android:id="@+id/chatButton"
+                android:layout_below="@+id/buddyBio"
+                android:layout_marginTop="130dp"
+                android:layout_marginLeft="135dp"
+                android:text="Chat!"/>
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>

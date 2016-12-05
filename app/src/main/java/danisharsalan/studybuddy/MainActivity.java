@@ -25,7 +25,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,8 +39,19 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     String display_name = "";
@@ -47,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static String profilePicURL = "";
     public static String lastName = "";
     public static String firstName = "";
+    EditText bio;
     ImageView profilePicSetterImageView;
     EditText firstNameSetterEditText;
     EditText lastNameSetterEditText;
@@ -54,11 +68,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static int PICK_IMAGE = 100;
     public boolean needProfilePic = true;
     private static final int REQUEST_EXTERNAL_STORAGE_RESULT = 1;
+    RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        queue = Volley.newRequestQueue(this);
+
         Intent i = getIntent();
         display_name = i.getStringExtra("display name") + "";
         if(display_name.split("\\w+").length > 1){
@@ -73,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         firstNameSetterEditText.setText(firstName);
         lastNameSetterEditText.setText(lastName);
         profilePicSetterImageView = (ImageButton) findViewById(R.id.profilePicSetter);
+        bio = (EditText) findViewById(R.id.desc_edittext);
         email = i.getStringExtra("email");
         photoUrl = i.getStringExtra("photo url");
         if(needProfilePic){
@@ -94,9 +112,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button doneButton = (Button) findViewById(R.id.donebutton);
         doneButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                moveToNextActivity(true);
+                String url = "http://studybuddy-backend.herokuapp.com/is_registered?email=" + email;
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                // Display the first 500 characters of the response string.
+                                if(response.equals("true") ){
+                                    moveToNextActivity(false);
+                                } else {
+                                    moveToNextActivity(true);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+                // Add the request to the RequestQueue.
+                queue.add(stringRequest);
+
             }
         });
+
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -152,17 +191,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void moveToNextActivity(boolean mustRegister) {
         display_name = firstNameSetterEditText.getText() + " " + lastNameSetterEditText.getText();
-        Intent i;
+        final Intent i;
         if(!mustRegister){
-            i = new Intent(MainActivity.this,CoursePage.class);
+            i = new Intent(MainActivity.this,NavigationMenu.class);
         } else {
             i = new Intent(MainActivity.this,AfterProfileWelcome.class);
+            queue = Volley.newRequestQueue(this);
+            String url = "http://studybuddy-backend.herokuapp.com/register";
+            StringRequest sr = new StringRequest(Request.Method.POST,url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    //mPostCommentResponse.requestCompleted();
+                    startActivity(i);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    //mPostCommentResponse.requestEndedWithError(error);
+                }
+            }){
+                @Override
+                protected Map<String,String> getParams(){
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("email", email);
+                    params.put("name", display_name);
+                    params.put("bio", bio.getText().toString());
+                    params.put("picture", profilePicURL);
+                    return params;
+                }
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String,String> params = new HashMap<String, String>();
+                    params.put("Content-Type","application/json");
+                    return params;
+                }
+            };
+            queue.add(sr);
         }
         i.putExtra("display name", display_name);
         i.putExtra("email", email);
         i.putExtra("photo url", profilePicURL);
+        i.putExtra("bio", bio.getText());
         i.putExtra("mustregister", mustRegister);
-        Log.d("Display Name:", display_name);
         startActivity(i);
     }
 

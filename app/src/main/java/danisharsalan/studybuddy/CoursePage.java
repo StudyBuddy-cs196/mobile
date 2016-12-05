@@ -86,11 +86,48 @@ public class CoursePage extends Fragment {
         if(addedCourses != null) {
 
 
-            textViewArr = new TextView[addedCourses.size()];
-            for (int num = 0; num < addedCourses.size(); num++) {
-                textViewArr[num] = createNewTextView(addedCourses.get(num));
-                mLayout.addView(textViewArr[num]);
-            }
+//            textViewArr = new TextView[addedCourses.size()];
+//            for (int num = 0; num < addedCourses.size(); num++) {
+//                textViewArr[num] = createNewTextView(addedCourses.get(num));
+//                mLayout.addView(textViewArr[num]);
+//            }
+            // Instantiate the RequestQueue.
+            queue = Volley.newRequestQueue(getActivity());
+            String url = "http://studybuddy-backend.herokuapp.com/courses?email=" + email;
+
+            // Request a string response from the provided URL.
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            // Display the first 500 characters of the response string.
+                            try {
+                                Log.d("CoursePage", "parsingSelectedCourses");
+                                JSONObject selectedCourses = new JSONObject(response);
+                                JSONArray selectedCoursesArray = selectedCourses.getJSONArray("courses");
+                                if(selectedCoursesArray.length() <= 0)
+                                {
+                                    movetoAddCourses();
+                                    return;
+                                }
+                                for(int i = 0; i < selectedCoursesArray.length(); i++)
+                                {
+                                    mLayout.addView(createNewTextView(selectedCoursesArray.getString(i)));
+                                }
+
+//                            setTextBarAuto();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            // Add the request to the RequestQueue.
+            queue.add(stringRequest);
         }
         else {
             // Instantiate the RequestQueue.
