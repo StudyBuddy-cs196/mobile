@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean needProfilePic = true;
     private static final int REQUEST_EXTERNAL_STORAGE_RESULT = 1;
     RequestQueue queue;
+    String bioFromIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +86,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             firstName = display_name;
             lastName = "";
         }
+        bioFromIntent = i.getStringExtra("bio");
         firstNameSetterEditText = (EditText) findViewById(R.id.first_name);
         lastNameSetterEditText = (EditText) findViewById(R.id.last_name);
         firstNameSetterEditText.setText(firstName);
         lastNameSetterEditText.setText(lastName);
         profilePicSetterImageView = (ImageButton) findViewById(R.id.profilePicSetter);
         bio = (EditText) findViewById(R.id.desc_edittext);
+        if(bioFromIntent!=null) {
+            bio.setText(bioFromIntent);
+        }
         email = i.getStringExtra("email");
         photoUrl = i.getStringExtra("photo url");
         if(needProfilePic){
@@ -196,39 +201,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             i = new Intent(MainActivity.this,NavigationMenu.class);
         } else {
             i = new Intent(MainActivity.this,AfterProfileWelcome.class);
-            queue = Volley.newRequestQueue(this);
-            String url = "http://studybuddy-backend.herokuapp.com/register";
-            StringRequest sr = new StringRequest(Request.Method.POST,url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    //mPostCommentResponse.requestCompleted();
-                    startActivity(i);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //mPostCommentResponse.requestEndedWithError(error);
-                }
-            }){
-                @Override
-                protected Map<String,String> getParams(){
-                    Map<String,String> params = new HashMap<String, String>();
-                    params.put("email", email);
-                    params.put("name", display_name);
-                    params.put("bio", bio.getText().toString());
-                    params.put("picture", profilePicURL);
-                    return params;
-                }
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String,String> params = new HashMap<String, String>();
-                    params.put("Content-Type","application/json");
-                    return params;
-                }
-            };
-            queue.add(sr);
         }
+        queue = Volley.newRequestQueue(this);
+        String url = "http://studybuddy-backend.herokuapp.com/register";
+        StringRequest sr = new StringRequest(Request.Method.POST,url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //mPostCommentResponse.requestCompleted();
+                startActivity(i);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //mPostCommentResponse.requestEndedWithError(error);
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("email", email);
+                params.put("name", display_name);
+                params.put("bio", bio.getText().toString());
+                params.put("picture", profilePicURL);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/json");
+                return params;
+            }
+        };
+        queue.add(sr);
         i.putExtra("display name", display_name);
         i.putExtra("email", email);
         i.putExtra("photo url", profilePicURL);

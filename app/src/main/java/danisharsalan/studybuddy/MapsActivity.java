@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -55,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String provider_id = "";
     String uid = "";
     String selectedCourse = "";
+    String bio;
     private float myHue = BitmapDescriptorFactory.HUE_AZURE;
     private float matchHue = BitmapDescriptorFactory.HUE_BLUE;
     private SlidingUpPanelLayout slidingLayout;
@@ -63,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageView expandedBuddyPic;
     private TextView expandedBuddyName;
     private TextView buddyBio;
+    private ArrayList<JSONObject> matches;
 
     protected LocationManager mLocationManager;
     private final LocationListener mLocationListener = new LocationListener() {
@@ -101,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         photo_url = i.getStringExtra("photo url");
         provider_id = i.getStringExtra("provider id");
         uid = i.getStringExtra("uid");
+        bio = i.getStringExtra("bio");
         selectedCourse = i.getStringExtra("selected course");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -121,12 +125,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Instantiate the RequestQueue.
         queue = Volley.newRequestQueue(this);
         String[] course = selectedCourse.split(" ");
-
         String url = "http://studybuddy-backend.herokuapp.com/matches?email=" + email + "&course="+ course[0] + "%20" + course[1];
         Log.d("url", url);
         String encodedUrl = url;
 
         Log.d("Post Request", encodedUrl);
+        matches = new ArrayList<JSONObject>();
         if(encodedUrl != null){
             StringRequest stringRequest = new StringRequest(Request.Method.GET, encodedUrl,
                     new Response.Listener<String>() {
@@ -146,7 +150,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for(int i = 0; i < userLocationsArray.length(); i++)
                                 {
                                     final JSONObject newUserLocation = userLocationsArray.getJSONObject(i);
-                                    placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("name"), matchHue);
+                                    placeMarker(newUserLocation.getDouble("lat"), newUserLocation.getDouble("lng"), newUserLocation.getString("email"), matchHue);
+                                }
+
+                                if(userLocationsArray != null){
+                                    for(int i = 0; i < userLocationsArray.length(); i++){
+                                        matches.add(userLocationsArray.getJSONObject(i));
+                                    }
                                 }
 
 
@@ -175,7 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         expandedBuddyName.setText(display_name);
         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
         buddyBio = (TextView) findViewById(R.id.buddyBio);
-        buddyBio.setText("bio");//bio
+        buddyBio.setText(bio);//bio
         expandedBuddyPic.setVisibility(View.INVISIBLE);
         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
     }
@@ -289,22 +299,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public boolean onMarkerClick(Marker marker) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 17));
                     if(marker.getTitle().equals("Your Location!")){
+                        Log.d("email", email);
                         slideUpNameTextView.setText("You!");
                         expandedBuddyName.setText(display_name);
                         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
                         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
-                        //buddyBio.setText(self bio from server)
+                        buddyBio.setText(bio);
                     } else {
-                        slideUpNameTextView.setText(marker.getTitle()); //use getTitle() to get buddy's info from server like name, pic, and bio
-                        expandedBuddyName.setText(marker.getTitle()); //getTitle() should either give email or display name to the server so it can find the Buddy's user on the database
-                        //Picasso.with(slideUpPreviewPic.getContext()).load(get url from server).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
-                        //Picasso.with(expandedBuddyPic.getContext()).load(get url from server).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
-                        //buddyBio.setText(get bio from server)
+                        JSONObject buddy = getBuddy(marker.getTitle());
+                        try {
+                            slideUpNameTextView.setText(buddy.getString("name")); //use getTitle() to get buddy's info from server like name, pic, and bio
+                            expandedBuddyName.setText(buddy.getString("name")); //getTitle() should either give email or display name to the server so it can find the Buddy's user on the database
+                            Picasso.with(slideUpPreviewPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
+                            Picasso.with(expandedBuddyPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
+                            buddyBio.setText(buddy.getString("bio"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                     return true;
                 }
             });
         }
     }
+
+//    public String getBuddyName(String email){
+//
+//    }
+
+    public JSONObject getBuddy(String email){
+        for(int i = 0; i < matches.size(); i++)
+        {
+            JSONObject match = matches.get(i);
+            try {
+                if(match.getString("email").equals(email))
+                {
+                    return match;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
 }

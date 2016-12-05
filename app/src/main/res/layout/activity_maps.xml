@@ -64,7 +64,7 @@
                     android:id="@+id/buddyPicPreview"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="2dp"/>
+                    android:layout_marginTop="7dp"/>
 
                 <TextView
                     android:id="@+id/username"
@@ -72,7 +72,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textColor="@color/white"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="17dp"
                     android:layout_toRightOf="@+id/buddyPicPreview"
                     android:paddingLeft="10dp"
                     android:text="Pick a buddy to study with!"
@@ -88,7 +88,7 @@
                 android:id="@+id/expandedBuddyPic"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"/>
+                android:layout_marginTop="20dp" />
 
             <TextView
                 android:layout_width="match_parent"

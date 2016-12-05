@@ -249,6 +249,7 @@ public class CoursePage extends Fragment {
                         intent.putExtra("photo url", photo_url);
                         //intent.putExtra("provider id", provider_id);
                         //intent.putExtra("uid", uid);
+                        intent.putExtra("bio", NavigationMenu.bio);
                         intent.putExtra("anonymity", isAnonymous);
                         intent.putExtra("full course list", courseList);
                         intent.putExtra("full code list", courseCode);

@@ -21,8 +21,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -42,6 +52,7 @@ public class NavigationMenu extends AppCompatActivity {
     String photo_url = "";
     String provider_id = "";
     String uid = "";
+    public static String bio = "";
     ArrayList<String> courseList = new ArrayList<String>();
     ArrayList<String> courseCode = new ArrayList<String>();
     ArrayList<String> addedCodes = new ArrayList<String>();
@@ -69,6 +80,7 @@ public class NavigationMenu extends AppCompatActivity {
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
     private Handler mHandler;
+    RequestQueue queue;
 
 
     @Override
@@ -97,6 +109,33 @@ public class NavigationMenu extends AppCompatActivity {
         courseCode = i.getStringArrayListExtra("full code list");
         addedCourses = i.getStringArrayListExtra("added courses");
         addedCodes = i.getStringArrayListExtra("added codes");
+
+        queue = Volley.newRequestQueue(this);
+        String url = "http://studybuddy-backend.herokuapp.com/get_user?email=" + email;
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        try {
+                            JSONObject information = new JSONObject(response);
+                            display_name = information.getString("name");
+                            photo_url = information.getString("picture");
+                            bio = information.getString("bio");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
 
 
         // Navigation view header
@@ -217,6 +256,7 @@ public class NavigationMenu extends AppCompatActivity {
                 i.putExtra("display_name", display_name);
                 i.putExtra("email", email);
                 i.putExtra("photo url", photo_url);
+                i.putExtra("bio", bio);
                 startActivity(i);
             case 3:
                 // notifications fragment
@@ -269,6 +309,7 @@ public class NavigationMenu extends AppCompatActivity {
                         } else {
                             i.putExtra("photo url", photo_url);
                         }
+                        i.putExtra("bio", bio);
                         startActivity(i);
                         drawer.closeDrawers();
                         return true;
@@ -280,6 +321,7 @@ public class NavigationMenu extends AppCompatActivity {
                         i2.putExtra("display name", display_name);
                         i2.putExtra("email", email);
                         i2.putExtra("photo url", photo_url);
+                        i2.putExtra("bio", bio);
                         startActivity(i2);
                         drawer.closeDrawers();
                         return true;
@@ -303,6 +345,7 @@ public class NavigationMenu extends AppCompatActivity {
                         } else {
                             i3.putExtra("photo url", photo_url);
                         }
+                        i3.putExtra("bio", bio);
                         startActivity(i3);
                         drawer.closeDrawers();
                         return true;
