@@ -245,8 +245,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.logOutButton){
-            Intent i = new Intent(MainActivity.this, LoginActivity.class);
-            i.putExtra("sign out", true);
+            Intent i = new Intent(MainActivity.this, FacebookLogin.class);
+            i.putExtra("logout", false);
             startActivity(i);
         }
     }

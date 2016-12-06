@@ -47,9 +47,9 @@ public class NavigationMenu extends AppCompatActivity {
     private TextView txtName, txtWebsite;
     private Toolbar toolbar;
     private FloatingActionButton fab;
-    String display_name = "";
-    String email ="";
-    String photo_url = "";
+    public static String display_name = "";
+    public static String email ="";
+    public static String photo_url = "";
     String provider_id = "";
     String uid = "";
     public static String bio = "";
@@ -94,6 +94,15 @@ public class NavigationMenu extends AppCompatActivity {
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        // Navigation view header
+        navHeader = navigationView.getHeaderView(0);
+        txtName = (TextView) navHeader.findViewById(R.id.name);
+        //txtWebsite = (TextView) navHeader.findViewById(R.id.website);
+        imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
+        imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
+
+
         if(navigationView==null){
             Log.d("NULL NAV","it is null ");
         }
@@ -112,6 +121,7 @@ public class NavigationMenu extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(this);
         String url = "http://studybuddy-backend.herokuapp.com/get_user?email=" + email;
+        Log.d("url in nav", url);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -122,8 +132,28 @@ public class NavigationMenu extends AppCompatActivity {
                         try {
                             JSONObject information = new JSONObject(response);
                             display_name = information.getString("name");
+                            txtName.setText(display_name);
                             photo_url = information.getString("picture");
                             bio = information.getString("bio");
+                            // name, website
+                            txtName.setText(display_name);
+
+                            // loading header background image
+                            Glide.with(getApplicationContext()).load(R.color.StudBudMainColor)
+                                    .crossFade()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(imgNavHeaderBg);
+
+                            // Loading profile image
+                            Glide.with(getApplicationContext()).load(photo_url)
+                                    .crossFade()
+                                    .thumbnail(0.56f)
+                                    .bitmapTransform(new RoundedTransformation2(getApplicationContext()))
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(imgProfile);
+
+                            // showing dot next to notifications label
+                            navigationView.getMenu().getItem(3).setActionView(R.layout.menu_dot);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -138,18 +168,12 @@ public class NavigationMenu extends AppCompatActivity {
         queue.add(stringRequest);
 
 
-        // Navigation view header
-        navHeader = navigationView.getHeaderView(0);
-        txtName = (TextView) navHeader.findViewById(R.id.name);
-        //txtWebsite = (TextView) navHeader.findViewById(R.id.website);
-        imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
-        imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
 
         // load toolbar titles from string resources
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
 
         // load nav menu header data
-        loadNavHeader();
+        //loadNavHeader();
 
         // initializing navigation menu
         setUpNavigationView();
@@ -254,14 +278,15 @@ public class NavigationMenu extends AppCompatActivity {
                 // movies fragment
                 Intent i = new Intent(this, AfterProfileWelcome.class);
                 i.putExtra("display_name", display_name);
+                Log.d("disp sent to APW", display_name);
                 i.putExtra("email", email);
                 i.putExtra("photo url", photo_url);
                 i.putExtra("bio", bio);
                 startActivity(i);
             case 3:
                 // notifications fragment
-                Intent i2 = new Intent(this, LoginActivity.class);
-                i2.putExtra("sign out", true);
+                Intent i2 = new Intent(this, FacebookLogin.class);
+                i2.putExtra("logout", false);
                 startActivity(i2);
 
             case 4:

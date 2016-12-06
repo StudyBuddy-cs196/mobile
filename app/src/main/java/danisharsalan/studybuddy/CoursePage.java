@@ -244,9 +244,9 @@ public class CoursePage extends Fragment {
                         // Do something after .1s = 100ms
 
                         Intent intent = new Intent(getActivity(),MapsActivity.class);
-                        intent.putExtra("display name", display_name);
-                        intent.putExtra("email", email);
-                        intent.putExtra("photo url", photo_url);
+                        intent.putExtra("display name", NavigationMenu.display_name);
+                        intent.putExtra("email", NavigationMenu.email);
+                        intent.putExtra("photo url", NavigationMenu.photo_url);
                         //intent.putExtra("provider id", provider_id);
                         //intent.putExtra("uid", uid);
                         intent.putExtra("bio", NavigationMenu.bio);

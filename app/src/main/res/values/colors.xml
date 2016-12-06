@@ -6,4 +6,5 @@
     <color name="StudBudMainColor">#40408c</color>
     <color name="white">#FFFFFF</color>
     <color name="transparent_white">#ADFFFFFF</color>
+    <color name="login_bg">#9796C0</color>
 </resources>

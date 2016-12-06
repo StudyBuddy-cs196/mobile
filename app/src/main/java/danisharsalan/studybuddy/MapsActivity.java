@@ -7,11 +7,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -66,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView expandedBuddyName;
     private TextView buddyBio;
     private ArrayList<JSONObject> matches;
+    private Button chatWithBuddy;
 
     protected LocationManager mLocationManager;
     private final LocationListener mLocationListener = new LocationListener() {
@@ -187,6 +190,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buddyBio = (TextView) findViewById(R.id.buddyBio);
         buddyBio.setText(bio);//bio
         expandedBuddyPic.setVisibility(View.INVISIBLE);
+        chatWithBuddy = (Button) findViewById(R.id.chatButton);
+        chatWithBuddy.setVisibility(View.INVISIBLE);
         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
     }
 
@@ -200,7 +205,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 expandedBuddyName.setVisibility(View.VISIBLE);
                 expandedBuddyPic.setVisibility(View.VISIBLE);
                 buddyBio.setVisibility(View.VISIBLE);
-
             }
 
             @Override
@@ -305,14 +309,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
                         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
                         buddyBio.setText(bio);
+                        chatWithBuddy.setEnabled(false);
+                        chatWithBuddy.setVisibility(View.INVISIBLE);
                     } else {
-                        JSONObject buddy = getBuddy(marker.getTitle());
+                        final JSONObject buddy = getBuddy(marker.getTitle());
                         try {
                             slideUpNameTextView.setText(buddy.getString("name")); //use getTitle() to get buddy's info from server like name, pic, and bio
                             expandedBuddyName.setText(buddy.getString("name")); //getTitle() should either give email or display name to the server so it can find the Buddy's user on the database
                             Picasso.with(slideUpPreviewPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
                             Picasso.with(expandedBuddyPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
                             buddyBio.setText(buddy.getString("bio"));
+                            chatWithBuddy.setEnabled(true);
+                            chatWithBuddy.setVisibility(View.VISIBLE);
+                            chatWithBuddy.setOnClickListener(new View.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    try {
+                                        String userId = buddy.getString("email");
+                                        Log.d("uid", userId);
+                                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://messaging/" + userId));
+
+                                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                                Uri.parse("fb://messaging/" + userId)));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
