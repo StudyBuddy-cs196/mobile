@@ -71,7 +71,6 @@ public class NavigationMenu extends AppCompatActivity {
     private static final String TAG_PROFILE = "profile";
     private static final String TAG_ADDCLASS = "add class";
     private static final String TAG_LOGOUT = "log out";
-    private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_HOME;
 
     // toolbar titles respected to selected nav menu item
@@ -288,11 +287,6 @@ public class NavigationMenu extends AppCompatActivity {
                 Intent i2 = new Intent(this, FacebookLogin.class);
                 i2.putExtra("logout", false);
                 startActivity(i2);
-
-            case 4:
-                // settings fragment
-                CoursePage settingsFragment = new CoursePage();
-                return settingsFragment;
             default:
                 return new CoursePage();
         }
@@ -323,7 +317,7 @@ public class NavigationMenu extends AppCompatActivity {
                         break;
                     case R.id.nav_view_profile:
                         navItemIndex = 1;
-                        //CURRENT_TAG = TAG_PROFILE;
+                        CURRENT_TAG = TAG_PROFILE;
                         // launch new intent instead of loading fragment
                         Intent i = new Intent(NavigationMenu.this, MainActivity.class);
                         i.putExtra("display name", display_name);
@@ -341,7 +335,7 @@ public class NavigationMenu extends AppCompatActivity {
                         //break;
                     case R.id.nav_add_classes:
                         navItemIndex = 2;
-                        //CURRENT_TAG = TAG_ADDCLASS;
+                        CURRENT_TAG = TAG_ADDCLASS;
                         Intent i2 = new Intent(NavigationMenu.this, AfterProfileWelcome.class);
                         i2.putExtra("display name", display_name);
                         i2.putExtra("email", email);
@@ -354,10 +348,6 @@ public class NavigationMenu extends AppCompatActivity {
                     case R.id.nav_log_out:
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_LOGOUT;
-                        break;
-                    case R.id.nav_settings:
-                        navItemIndex = 4;
-                        CURRENT_TAG = TAG_SETTINGS;
                         break;
                     case R.id.nav_about_us:
                         // launch new intent instead of loading fragment
@@ -444,7 +434,7 @@ public class NavigationMenu extends AppCompatActivity {
 
         // show menu only when home fragment is selected
         if (navItemIndex == 0) {
-            getMenuInflater().inflate(R.menu.main, menu);
+            //getMenuInflater().inflate(R.menu.main, menu);
         }
 
         // when fragment is notifications, load the menu created for notifications
