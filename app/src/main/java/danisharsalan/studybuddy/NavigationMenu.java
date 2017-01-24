@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +28,6 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,17 +44,22 @@ public class NavigationMenu extends AppCompatActivity {
     private TextView txtName, txtWebsite;
     private Toolbar toolbar;
     private FloatingActionButton fab;
+
     public static String display_name = "";
     public static String email ="";
     public static String photo_url = "";
+    public static String bio = "";
+
     String provider_id = "";
     String uid = "";
-    public static String bio = "";
+
+    boolean isAnonymous = false;
+
     ArrayList<String> courseList = new ArrayList<String>();
     ArrayList<String> courseCode = new ArrayList<String>();
     ArrayList<String> addedCodes = new ArrayList<String>();
     ArrayList<String> addedCourses = new ArrayList<String>();
-    boolean isAnonymous = false;
+
 
     // urls to load navigation header background image
     // and profile image
@@ -97,7 +99,6 @@ public class NavigationMenu extends AppCompatActivity {
         // Navigation view header
         navHeader = navigationView.getHeaderView(0);
         txtName = (TextView) navHeader.findViewById(R.id.name);
-        //txtWebsite = (TextView) navHeader.findViewById(R.id.website);
         imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.img_header_bg);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
 
@@ -118,9 +119,9 @@ public class NavigationMenu extends AppCompatActivity {
         addedCourses = i.getStringArrayListExtra("added courses");
         addedCodes = i.getStringArrayListExtra("added codes");
 
+        // start queue
         queue = Volley.newRequestQueue(this);
         String url = "http://studybuddy-backend.herokuapp.com/get_user?email=" + email;
-        Log.d("url in nav", url);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -254,8 +255,6 @@ public class NavigationMenu extends AppCompatActivity {
             mHandler.post(mPendingRunnable);
         }
 
-        // show or hide the fab button
-
         //Closing drawer on item click
         drawer.closeDrawers();
 
@@ -266,24 +265,23 @@ public class NavigationMenu extends AppCompatActivity {
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
             case 0:
-                // home
+                // Courses list
                 CoursePage homeFragment = new CoursePage();
                 return homeFragment;
             case 1:
-                // photos
+                // Personal profile
                 PersonalProfile profileFragment = new PersonalProfile();
                 return profileFragment;
             case 2:
-                // movies fragment
+                // Courses select
                 Intent i = new Intent(this, AfterProfileWelcome.class);
                 i.putExtra("display_name", display_name);
-                Log.d("disp sent to APW", display_name);
                 i.putExtra("email", email);
                 i.putExtra("photo url", photo_url);
                 i.putExtra("bio", bio);
                 startActivity(i);
             case 3:
-                // notifications fragment
+                // Back to login
                 Intent i2 = new Intent(this, FacebookLogin.class);
                 i2.putExtra("logout", false);
                 startActivity(i2);
@@ -320,14 +318,16 @@ public class NavigationMenu extends AppCompatActivity {
                         CURRENT_TAG = TAG_PROFILE;
                         // launch new intent instead of loading fragment
                         Intent i = new Intent(NavigationMenu.this, MainActivity.class);
-                        i.putExtra("display name", display_name);
-                        i.putExtra("email", email);
+
                         if(photo_url == null){
                             Log.d("photo_url","it's null...");
                             i.putExtra("photo url", "https://support.plymouth.edu/kb_images/Yammer/default.jpeg");
                         } else {
                             i.putExtra("photo url", photo_url);
                         }
+
+                        i.putExtra("display name", display_name);
+                        i.putExtra("email", email);
                         i.putExtra("bio", bio);
                         startActivity(i);
                         drawer.closeDrawers();
@@ -337,10 +337,12 @@ public class NavigationMenu extends AppCompatActivity {
                         navItemIndex = 2;
                         CURRENT_TAG = TAG_ADDCLASS;
                         Intent i2 = new Intent(NavigationMenu.this, AfterProfileWelcome.class);
+
                         i2.putExtra("display name", display_name);
                         i2.putExtra("email", email);
                         i2.putExtra("photo url", photo_url);
                         i2.putExtra("bio", bio);
+
                         startActivity(i2);
                         drawer.closeDrawers();
                         return true;
@@ -352,14 +354,16 @@ public class NavigationMenu extends AppCompatActivity {
                     case R.id.nav_about_us:
                         // launch new intent instead of loading fragment
                         Intent i3 = new Intent(NavigationMenu.this, MainActivity.class);
-                        i3.putExtra("display name", display_name);
-                        i3.putExtra("email", email);
+
                         if(photo_url == null){
                             Log.d("photo_url","it's null...");
                             i3.putExtra("photo url", "https://support.plymouth.edu/kb_images/Yammer/default.jpeg");
                         } else {
                             i3.putExtra("photo url", photo_url);
                         }
+
+                        i3.putExtra("display name", display_name);
+                        i3.putExtra("email", email);
                         i3.putExtra("bio", bio);
                         startActivity(i3);
                         drawer.closeDrawers();
@@ -374,6 +378,7 @@ public class NavigationMenu extends AppCompatActivity {
                 } else {
                     menuItem.setChecked(true);
                 }
+
                 menuItem.setChecked(true);
 
                 loadHomeFragment();
@@ -407,25 +412,7 @@ public class NavigationMenu extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawers();
-//            return;
-//        }
-//
-//        // This code loads home fragment when back key is pressed
-//        // when user is in other fragment than home
-//        if (shouldLoadHomeFragOnBackPress) {
-//            // checking if user is on other navigation menu
-//            // rather than home
-//            if (navItemIndex != 0) {
-//                navItemIndex = 0;
-//                CURRENT_TAG = TAG_HOME;
-//                loadHomeFragment();
-//                return;
-//            }
-//        }
-//
-//        super.onBackPressed();
+        // disable back button press
     }
 
     @Override

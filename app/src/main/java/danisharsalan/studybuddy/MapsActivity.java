@@ -2,6 +2,7 @@ package danisharsalan.studybuddy;
 
 import android.*;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -70,14 +72,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<JSONObject> matches;
     private Button chatWithBuddy;
 
-    protected LocationManager mLocationManager;
+    Marker userLocation;
+
+    protected LocationManager mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);;
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
-        public void onLocationChanged(final Location location) {
-            Log.d("Location", String.valueOf(location));
+        public void onLocationChanged(Location location) {
             currentLocationLat = location.getLatitude();
             currentLocationLong = location.getLongitude();
-            Log.d("Latitude", String.valueOf(currentLocationLat));
+            Toast.makeText(MapsActivity.this,  "Location changed!",
+                    Toast.LENGTH_SHORT).show();
             placeMarker(currentLocationLat, currentLocationLong, "Your Location!", myHue);
         }
 
@@ -102,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Intent i = getIntent();
+
         display_name = i.getStringExtra("display name");
         email =i.getStringExtra("email");
         photo_url = i.getStringExtra("photo url");
@@ -109,15 +114,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         uid = i.getStringExtra("uid");
         bio = i.getStringExtra("bio");
         selectedCourse = i.getStringExtra("selected course");
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        // Check if permissions are given
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)// && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         {
-
+            // Get permissions
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
         }
@@ -125,11 +132,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             forceLocationUpdate();
         }
+
         // Instantiate the RequestQueue.
         queue = Volley.newRequestQueue(this);
         String[] course = selectedCourse.split(" ");
         String url = "http://studybuddy-backend.herokuapp.com/matches?email=" + email + "&course="+ course[0] + "%20" + course[1];
-        Log.d("url", url);
+
         String encodedUrl = url;
 
         Log.d("Post Request", encodedUrl);
@@ -265,9 +273,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -286,28 +291,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeMarker(currentLocationLat, currentLocationLong, "Your Location!", myHue);
     }
 
-    public void placeMarker(double lat, double lng, String name, float hue)
-    {
+    public void placeMarker(double lat, double lng, String name, float hue) {
         Log.d("Location", "Current Real location: " + currentLocationLat + "," + currentLocationLong);
-        if(mMap != null) {
+        if (mMap != null) {
 
             LatLng markerLoc = new LatLng(lat, lng);
-            mMap.addMarker(new MarkerOptions().position(markerLoc).title(name).icon(BitmapDescriptorFactory.defaultMarker(hue)));
-            if(hue == myHue)
-            {
+            if (name.equals("Your Location!")) {
+                if (userLocation == null) {
+                    userLocation = mMap.addMarker(new MarkerOptions().position(markerLoc).title(name).icon(BitmapDescriptorFactory.defaultMarker(hue)));
+                } else {
+                    userLocation.remove();
+                    userLocation = mMap.addMarker(new MarkerOptions().position(markerLoc).title(name).icon(BitmapDescriptorFactory.defaultMarker(hue)));
+                }
+            } else {
+                mMap.addMarker(new MarkerOptions().position(markerLoc).title(name).icon(BitmapDescriptorFactory.defaultMarker(hue)));
+            }
+
+            if (hue == myHue) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc, 17));
             }
 
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 17));
-                    if(marker.getTitle().equals("Your Location!")){
+                    if (marker.getTitle().equals("Your Location!")) {
                         Log.d("email", email);
                         slideUpNameTextView.setText("You!");
                         expandedBuddyName.setText(display_name);
-                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
-                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
+                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320, 320).centerCrop().into(slideUpPreviewPic);
+                        Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320, 320).centerCrop().into(expandedBuddyPic);
                         buddyBio.setText(bio);
                         chatWithBuddy.setEnabled(false);
                         chatWithBuddy.setVisibility(View.INVISIBLE);
@@ -316,12 +329,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         try {
                             slideUpNameTextView.setText(buddy.getString("name")); //use getTitle() to get buddy's info from server like name, pic, and bio
                             expandedBuddyName.setText(buddy.getString("name")); //getTitle() should either give email or display name to the server so it can find the Buddy's user on the database
-                            Picasso.with(slideUpPreviewPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(slideUpPreviewPic);
-                            Picasso.with(expandedBuddyPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
+                            Picasso.with(slideUpPreviewPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320, 320).centerCrop().into(slideUpPreviewPic);
+                            Picasso.with(expandedBuddyPic.getContext()).load(buddy.getString("picture")).transform(new RoundedTransformation(160, 13)).resize(320, 320).centerCrop().into(expandedBuddyPic);
                             buddyBio.setText(buddy.getString("bio"));
                             chatWithBuddy.setEnabled(true);
                             chatWithBuddy.setVisibility(View.VISIBLE);
-                            chatWithBuddy.setOnClickListener(new View.OnClickListener(){
+                            chatWithBuddy.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     try {
@@ -346,10 +359,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
     }
-
-//    public String getBuddyName(String email){
-//
-//    }
 
     public JSONObject getBuddy(String email){
         for(int i = 0; i < matches.size(); i++)

@@ -40,19 +40,34 @@ import java.util.Map;
 import static danisharsalan.studybuddy.R.id.editText1;
 
 public class AddClassesFragment extends Fragment {
+
+    private CoordinatorLayout ll;
+    private FragmentActivity fa;
+    private LinearLayout mLayout;
+
     String display_name = "";
     String email = "";
     String photo_url = "";
+    String fontpath;
+
     ArrayList<String> courseList = new ArrayList<String>();
     ArrayList<String> courseCode = new ArrayList<String>();
     ArrayList<String> addedCodes = new ArrayList<String>();
     ArrayList<String> addedCourses = new ArrayList<String>();
+
     boolean isAnonymous = false;
-    private LinearLayout mLayout;
+
     RequestQueue queue;
     Context context;
-    private CoordinatorLayout ll;
-    private FragmentActivity fa;
+
+    Typeface tf;
+
+    TextView hello_name;
+    TextView welcomeMessage;
+
+    Button addButton;
+    Button nButton;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,23 +84,25 @@ public class AddClassesFragment extends Fragment {
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        String fontpath = "fonts/HelveticaNeue Light.ttf";
-        Typeface tf = Typeface.createFromAsset(getActivity().getAssets(),fontpath);
-        TextView hello_name = (TextView)ll.findViewById(R.id.textViewName);
+        fontpath = "fonts/HelveticaNeue Light.ttf";
+        tf = Typeface.createFromAsset(getActivity().getAssets(),fontpath);
+
+        hello_name = (TextView)ll.findViewById(R.id.textViewName);
         hello_name.setTypeface(tf);
-        TextView welcomeMessage = (TextView)ll.findViewById(R.id.textViewWelcomeMessage);
+
+        welcomeMessage = (TextView)ll.findViewById(R.id.textViewWelcomeMessage);
         welcomeMessage.setTypeface(tf);
+
         AutoCompleteTextView searchBar = (AutoCompleteTextView)ll.findViewById(R.id.editText1);
         searchBar.setTypeface(tf);
-        Button addButton = (Button)ll.findViewById(R.id.addClassButton);
+
+        addButton = (Button)ll.findViewById(R.id.addClassButton);
         addButton.setTypeface(tf);
-        Button nButton = (Button)ll.findViewById(R.id.nextButton);
+
+        nButton = (Button)ll.findViewById(R.id.nextButton);
         nButton.setTypeface(tf);
 
-
-
         hello_name.setText("Hello "+display_name.substring(0,display_name.indexOf(' '))+ "!");
-
 
         // Instantiate the RequestQueue.
         queue = Volley.newRequestQueue(getActivity());
@@ -156,22 +173,15 @@ public class AddClassesFragment extends Fragment {
 
             }
         });
+
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
 
-//        ActionBar actionBar = getActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setDisplayShowCustomEnabled(true);
-//        // actionBar.setDisplayShowTitleEnabled(false);
-        // actionBar.setIcon(R.drawable.ic_action_search);
-
-        Button addClassButton = (Button) ll.findViewById(R.id.addClassButton);
-        addClassButton.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AutoCompleteTextView source = (AutoCompleteTextView) ll.findViewById(editText1);
 
                 int index = courseCode.indexOf(source.getText().toString());
-
 
                 if (index >= 0) {
                     String chosen = courseList.get(index);
@@ -219,11 +229,10 @@ public class AddClassesFragment extends Fragment {
             }
         });
 
-
-        Button nextButton = (Button) ll.findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
+        nButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), NavigationMenu.class);
+
                 intent.putExtra("display name", display_name);
                 intent.putExtra("email", email);
                 intent.putExtra("photo url", photo_url);
@@ -231,7 +240,6 @@ public class AddClassesFragment extends Fragment {
                 intent.putExtra("full code list", courseCode);
                 intent.putExtra("added courses", addedCourses);
                 intent.putExtra("added codes", addedCodes);
-                //i.putExtra("display name", auth.getCurrentUser().getDisplayName());
 
                 startActivity(intent);
             }
@@ -241,10 +249,6 @@ public class AddClassesFragment extends Fragment {
     }
 
     public void setTextBarAuto() {
-
-
-        //actionBar.setCustomView(v);
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_dropdown_item_1line, courseCode);
         AutoCompleteTextView textView = (AutoCompleteTextView) ll.findViewById(editText1);
@@ -256,8 +260,11 @@ public class AddClassesFragment extends Fragment {
     private TextView createNewTextView(String text) {
         final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         final TextView textView = new TextView(getActivity());
-        String fontpath = "fonts/HelveticaNeue Light.ttf";
-        Typeface tf = Typeface.createFromAsset(getActivity().getAssets(),fontpath);
+
+        fontpath = "fonts/HelveticaNeue Light.ttf";
+
+        tf = Typeface.createFromAsset(getActivity().getAssets(),fontpath);
+
         textView.setTypeface(tf);
         textView.setLayoutParams(lparams);
         textView.setTextColor(Color.WHITE);
@@ -266,6 +273,7 @@ public class AddClassesFragment extends Fragment {
         textView.setPadding(20, 10, 20, 10);
         textView.setEllipsize(TextUtils.TruncateAt.END);
         textView.setText(text);
+
         return textView;
     }
 
