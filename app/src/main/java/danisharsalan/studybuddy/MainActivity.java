@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         queue = Volley.newRequestQueue(this);
 
+        Log.d("da","sd");
+
         // Get intent from previous view
         Intent i = getIntent();
         display_name = i.getStringExtra("display name") + "";
