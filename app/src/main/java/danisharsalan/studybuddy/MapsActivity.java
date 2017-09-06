@@ -74,33 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     Marker userLocation;
 
-    protected LocationManager mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);;
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            currentLocationLat = location.getLatitude();
-            currentLocationLong = location.getLongitude();
-            Toast.makeText(MapsActivity.this,  "Location changed!",
-                    Toast.LENGTH_SHORT).show();
-            placeMarker(currentLocationLat, currentLocationLong, "Your Location!", myHue);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.d("Status", "Status Changed: " + status);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,6 +175,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         chatWithBuddy.setVisibility(View.INVISIBLE);
         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
     }
+
+    protected LocationManager mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);;
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocationLat = location.getLatitude();
+            currentLocationLong = location.getLongitude();
+            Toast.makeText(MapsActivity.this,  "Location changed!",
+                    Toast.LENGTH_SHORT).show();
+            placeMarker(currentLocationLat, currentLocationLong, "Your Location!", myHue);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.d("Status", "Status Changed: " + status);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
     private SlidingUpPanelLayout.PanelSlideListener onSlideListener() {
         return new SlidingUpPanelLayout.PanelSlideListener() {
@@ -340,10 +340,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     try {
                                         String userId = buddy.getString("email");
                                         Log.d("uid", userId);
-                                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://messaging/" + userId));
+                                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + userId));
 
                                         startActivity(new Intent(Intent.ACTION_VIEW,
-                                                Uri.parse("fb://messaging/" + userId)));
+                                                Uri.parse("fb://profile/" + userId)));
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
