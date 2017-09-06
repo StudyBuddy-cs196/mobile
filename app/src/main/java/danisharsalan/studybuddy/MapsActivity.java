@@ -71,6 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView buddyBio;
     private ArrayList<JSONObject> matches;
     private Button chatWithBuddy;
+    protected LocationManager mLocationManager;
 
     Marker userLocation;
 
@@ -87,6 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         uid = i.getStringExtra("uid");
         bio = i.getStringExtra("bio");
         selectedCourse = i.getStringExtra("selected course");
+        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -174,9 +176,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         chatWithBuddy = (Button) findViewById(R.id.chatButton);
         chatWithBuddy.setVisibility(View.INVISIBLE);
         Picasso.with(slideUpPreviewPic.getContext()).load(photo_url).transform(new RoundedTransformation(160, 13)).resize(320,320).centerCrop().into(expandedBuddyPic);
+
     }
 
-    protected LocationManager mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);;
+
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
