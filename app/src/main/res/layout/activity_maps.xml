@@ -121,7 +121,7 @@
                 android:layout_below="@+id/buddyBio"
                 android:layout_marginTop="130dp"
                 android:layout_marginLeft="135dp"
-                android:text="Chat!"/>
+                android:text="Facebook Profile"/>
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
