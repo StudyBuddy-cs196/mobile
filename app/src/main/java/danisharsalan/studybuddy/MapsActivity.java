@@ -344,10 +344,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         String userId = buddy.getString("email");
                                         Log.d("uid", userId);
                                         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + userId));
-
-                                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                                Uri.parse("fb://profile/" + userId)));
+                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.facebook.com/" + userId)));
+                                        //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + userId)));
                                     } catch (JSONException e) {
+
                                         e.printStackTrace();
                                     }
                                 }
